@@ -8,6 +8,8 @@ import com.example.pricecompareredis.vo.ProductGroup;
 
 public interface LowestPriceService {
 	Set getZsetValue(String key);
+	Set getZsetValueWithStatus(String key) throws Exception;
+	Set getZsetValueWithSpecificException(String key);
 	int setNewProduct(Product newProduct);
 	int setNewProductGroup(ProductGroup productGroup);
 	int setNewProductGroupToKeyword(String keyword, String prodGrpId, double score);

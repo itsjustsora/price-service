@@ -10,9 +10,11 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.example.pricecompareredis.vo.Keyword;
+import com.example.pricecompareredis.vo.NotFoundException;
 import com.example.pricecompareredis.vo.Product;
 import com.example.pricecompareredis.vo.ProductGroup;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +27,22 @@ public class LowestPriceServiceImpl implements LowestPriceService{
 
 	public Set getZsetValue(String key) {
 		return redisTemplate.opsForZSet().rangeWithScores(key, 0, 9);
+	}
+
+	public Set getZsetValueWithStatus(String key) throws Exception {
+		Set myTempSet = redisTemplate.opsForZSet().rangeWithScores(key, 0, 9);
+		if (myTempSet.size() < 1 ) {
+			throw new Exception("The Key doesn't have any member");
+		}
+		return myTempSet;
+	}
+
+	public Set getZsetValueWithSpecificException(String key) {
+		Set set =  redisTemplate.opsForZSet().rangeWithScores(key, 0, 9);
+		if (set.size() < 1) {
+			throw new NotFoundException("The Key doesn't exist in redis", HttpStatus.NOT_FOUND);
+		}
+		return set;
 	}
 
 	@Override
